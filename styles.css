@@ -25,6 +25,12 @@ label { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; font-s
 input, textarea, select { padding:10px; border:1px solid #e5e7eb; border-radius:12px; font-size:16px; }
 menu { display:flex; gap:10px; justify-content:flex-end; padding:0; margin:12px 0 0; }
 menu button { padding:10px 14px; border-radius:12px; border:1px solid #e5e7eb; background:white; }
+.ghost {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
 menu #saveBtn { background:var(--brand); color:white; border:none; }
 @media (display-mode: standalone) { header { padding-top:calc(env(safe-area-inset-top)); } body { padding-bottom:calc(env(safe-area-inset-bottom)); } }
 
