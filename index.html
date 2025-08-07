@@ -33,18 +33,11 @@
       <ul id="clientsList" class="list"></ul>
     </section>
 
-    <!-- ЗМІЙКА -->
+    <!-- КНОПКА ВІДКРИТИ ГРУ -->
     <section class="card">
       <h2>Змійка</h2>
-      <canvas id="snake" width="320" height="320"></canvas>
-      <div class="game-ui">
-        <span id="scoreLbl">Очки: 0</span>
-        <span id="bestLbl">Рекорд: 0</span>
-        <div class="spacer"></div>
-        <button class="btn" id="btnPause">Пауза</button>
-        <button class="btn" id="btnRestart">Спочатку</button>
-      </div>
-      <div class="game-hint">Керуй свайпами (на телефоні) або стрілками / WASD.</div>
+      <p class="muted">Натисни «Грати», щоб відкрити гру на весь екран.</p>
+      <button class="btn" id="openSnake">Грати</button>
     </section>
   </main>
 
@@ -99,6 +92,25 @@
       <div id="vNotes" class="v-notes"></div>
       <menu><button id="vClose">Закрити</button></menu>
     </div>
+  </dialog>
+
+  <!-- ПОВНОЕКРАННА ЗМІЙКА -->
+  <dialog id="snakeDialog" class="snake-full">
+    <div class="snake-topbar">
+      <div class="snake-scores">
+        <span id="scoreLbl">Очки: 0</span>
+        <span id="bestLbl">Рекорд: 0</span>
+      </div>
+      <div class="snake-actions">
+        <button class="btn" id="btnPause">Пауза</button>
+        <button class="btn" id="btnRestart">Спочатку</button>
+        <button class="btn danger" id="btnCloseSnake">Закрити</button>
+      </div>
+    </div>
+    <div class="snake-wrap">
+      <canvas id="snakeCanvas" width="320" height="320"></canvas>
+    </div>
+    <div class="game-hint">Тицяй на сторону поля, щоб повертати змійку. Клавіатура: стрілки/WASD.</div>
   </dialog>
 
   <script src="app.js"></script>
