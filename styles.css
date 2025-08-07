@@ -1,52 +1,120 @@
-:root { --bg:#f5f7ff; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --brand:#4f82ff; }
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans'; }
-
-header { position:sticky; top:0; background:var(--bg); padding:12px 16px; display:flex; gap:12px; align-items:center; border-bottom:1px solid #e5e7eb; }
-header h1 { font-size:20px; font-weight:700; margin:0; flex:1; }
-header button { background:var(--brand); color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:600; }
-
-main { padding:16px; display:flex; flex-direction:column; gap:16px; }
-.card { background:var(--card); border-radius:16px; padding:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); }
-.card h2 { margin:4px 6px 10px; font-size:16px; }
-
-.toolbar { display:flex; gap:8px; padding:8px; }
-.toolbar input { flex:1; padding:10px; border:1px solid #e5e7eb; border-radius:12px; }
-
-.list { list-style:none; margin:0; padding:0; }
-.list li { padding:10px 8px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px; }
-.list li:last-child { border-bottom:none; }
-.muted { color:var(--muted); padding:4px 0; }
-
-.row { display:flex; gap:8px; align-items:center; }
-.row .grow { flex:1; }
-.actions { margin-left:auto; display:flex; gap:8px; }
-.btn { padding:8px 10px; border-radius:10px; border:1px solid #e5e7eb; background:white; }
-.btn.danger { border-color:#fecaca; background:#fee2e2; }
-
-/* dialogs & form */
-dialog { border:none; border-radius:16px; padding:0; width:min(520px, 92vw); }
-dialog form { padding:12px; }
-label { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; font-size:14px; }
-input, textarea, select { padding:10px; border:1px solid #e5e7eb; border-radius:12px; font-size:16px; }
-menu { display:flex; gap:10px; justify-content:flex-end; padding:0; margin:12px 0 0; }
-menu button { padding:10px 14px; border-radius:12px; border:1px solid #e5e7eb; background:white; }
-menu #saveBtn { background:var(--brand); color:white; border:none; }
-
-@media (display-mode: standalone) {
-  header { padding-top:calc(env(safe-area-inset-top)); }
-  body   { padding-bottom:calc(env(safe-area-inset-bottom)); }
+:root{
+  --bg:#f2f4ff;
+  --card:#ffffff;
+  --ink:#0f172a;
+  --muted:#6b7280;
+  --brand:#5b7cff;         /* акцент */
+  --brand-2:#7c4dff;       /* другий акцент */
+  --ok:#10b981;
+  --danger:#fecaca;
+  --shadow: 0 8px 24px rgba(17,24,39,.08);
+  --radius: 18px;
 }
 
-/* Спецкнопка для "Оновити" */
-.ghost { background:black; border:1px solid #e5e7eb; border-radius:12px; padding:10px 14px; }
+/* базове */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial}
+img{display:block;max-width:100%}
 
-/* Перегляд клієнта */
-.view-card { padding:16px; }
-.v-row { display:flex; gap:8px; margin:6px 0; }
-.v-label { width:90px; color:#64748b; }
-.v-notes { white-space:pre-wrap; background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:10px; }
-.link { color:#2563eb; text-decoration:none; }
+/* Хедер — молодіжний градієнт */
+header{
+  position:sticky; top:0; z-index:50;
+  padding:14px 16px;
+  display:flex; align-items:center; gap:12px;
+  background:linear-gradient(135deg, var(--brand), var(--brand-2));
+  color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.15);
+  backdrop-filter:saturate(140%) blur(6px);
+}
+header h1{margin:0; font-size:22px; font-weight:800; letter-spacing:.2px; flex:1}
+header button{
+  border:none; border-radius:999px; padding:10px 16px;
+  background:#fff; color:#111827; font-weight:700;
+  box-shadow:0 6px 16px rgba(0,0,0,.12);
+}
+header .ghost{
+  background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.35);
+  box-shadow:none;
+}
 
-/* Телефон у списку */
-.list .phone { font-size:12px; color:#64748b; }
+/* контент */
+main{padding:16px; display:flex; flex-direction:column; gap:16px}
+
+/* картки — неоморф */
+.card{
+  background:var(--card); border-radius:var(--radius); padding:14px;
+  box-shadow: var(--shadow); border:1px solid rgba(17,24,39,.04);
+}
+.card h2{margin:0 4px 12px; font-size:18px; font-weight:800}
+
+/* пошук */
+.toolbar{display:flex; gap:10px; padding:6px 2px}
+.toolbar input{
+  flex:1; padding:12px 14px; border:1px solid #e5e7eb; border-radius:14px;
+  background:#f8fafc; outline:none;
+}
+
+/* список клієнтів */
+.list{list-style:none; margin:0; padding:0}
+.list li{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 10px; border-bottom:1px solid #f1f5f9;
+}
+.list li:last-child{border-bottom:none}
+.row .grow{flex:1}
+.muted{color:var(--muted)}
+.phone{font-size:12px; color:#94a3b8}
+
+/* аватар з ініціалом */
+.avatar{
+  width:42px; height:42px; border-radius:50%;
+  display:grid; place-items:center;
+  background:linear-gradient(135deg,#b7c3ff,#e3d0ff);
+  color:#111827; font-weight:800;
+  box-shadow:0 6px 14px rgba(99,102,241,.25);
+}
+
+/* бейдж повторення */
+.badge{
+  font-size:12px; padding:4px 8px; border-radius:999px;
+  background:#eef2ff; color:#3730a3; font-weight:700;
+}
+
+/* кнопки дій */
+.actions{margin-left:auto; display:flex; gap:8px}
+.btn{padding:8px 12px; border-radius:12px; border:1px solid #e5e7eb; background:#fff}
+.btn.danger{border-color:var(--danger); background:#fee2e2}
+
+/* діалоги */
+dialog{border:none; border-radius:20px; padding:0; width:min(520px,92vw); box-shadow:var(--shadow)}
+dialog form{padding:14px}
+label{display:flex; flex-direction:column; gap:6px; margin-bottom:12px; font-size:14px}
+input,textarea,select{padding:12px; border:1px solid #e5e7eb; border-radius:14px; font-size:16px}
+menu{display:flex; gap:10px; justify-content:flex-end; padding:0 0 12px; margin:0}
+menu button{padding:10px 14px; border-radius:12px; border:1px solid #e5e7eb; background:#fff}
+#saveBtn{background:var(--brand); color:#fff; border:none}
+
+/* перегляд клієнта */
+.view-card{padding:16px}
+.v-row{display:flex; gap:8px; margin:8px 0}
+.v-label{width:96px; color:#64748b}
+.v-notes{white-space:pre-wrap; background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px; padding:10px}
+.link{color:#2563eb; text-decoration:none}
+
+/* PWA safe areas */
+@supports(padding:max(0px)){
+  header{ padding-top:calc(14px + env(safe-area-inset-top)); }
+  body{ padding-bottom:env(safe-area-inset-bottom); }
+}
+
+/* темна тема */
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f172a; --card:#0b1220; --ink:#e5e7eb; --muted:#94a3b8; --shadow: 0 8px 24px rgba(0,0,0,.45); }
+  header{ border-bottom-color:rgba(255,255,255,.08) }
+  .toolbar input{ background:#0e1626; border-color:#1f2937 }
+  .card{ border-color:#111827 }
+  .btn{ background:#0e1626; border-color:#223047 }
+  .btn.danger{ background:#3b1f25; border-color:#6b111d }
+  .v-notes{ background:#0e1626; border-color:#1f2937 }
+}
