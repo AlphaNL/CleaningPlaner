@@ -1,135 +1,185 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Clean Planner</title>
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#4f82ff">
-  <link rel="apple-touch-icon" href="assets/icon-180.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clean Planner — Snake Game</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: ui-sans-serif, sans-serif;
+  }
+  body {
+    background: #f2f4ff;
+    color: #0f172a;
+  }
+  .card {
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  .banner {
+    position: relative;
+    cursor: pointer;
+  }
+  .banner img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  .snake-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #111827;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-header {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+  }
+  .modal-header button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #ff3b3b;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  #snakeCanvas {
+    background: #0b1220;
+    touch-action: none;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>Мій розклад</h1>
-    <button id="addClientBtn">+ Клієнт</button>
-    <button id="refreshBtn" class="ghost">Оновити</button>
-  </header>
 
-  <main>
-    <section class="card">
-      <h2>План на завтра</h2>
-      <ul id="tomorrowList" class="list"></ul>
-      <div id="tomorrowEmpty" class="muted">Немає запланованих прибирань на завтра</div>
-    </section>
+<main class="card">
+  <h2>Гра "Змійка"</h2>
+  <div class="banner" id="banner">
+    <img src="https://raw.githubusercontent.com/AlphaNL/CleaningPlaner/5d9c580ae8f440fa242188981eec72cc2a536806/FC0A03B0-579F-4F9D-8C47-801A1D3D0698.png" alt="Snake Banner">
+  </div>
+</main>
 
-    <section class="card">
-      <h2>Клієнти</h2>
-      <div class="toolbar">
-        <input id="search" placeholder="Пошук по імені/вулиці/адресі/телефону" />
-      </div>
-      <ul id="clientsList" class="list"></ul>
-    </section>
+<dialog class="snake-modal" id="snakeModal">
+  <div class="modal-header">
+    <button id="closeSnake">Назад</button>
+  </div>
+  <canvas id="snakeCanvas" width="320" height="320"></canvas>
+</dialog>
 
-    <!-- КНОПКА ВІДКРИТИ ГРУ -->
-    <section class="card">
-      <h2>Змійка</h2>
-      <p class="muted">Натисни «Грати», щоб відкрити гру на весь екран.</p>
-      <button class="btn" id="openSnake">Грати</button>
-    </section>
-  </main>
+<script>
+  const banner = document.getElementById('banner');
+  const modal = document.getElementById('snakeModal');
+  const closeBtn = document.getElementById('closeSnake');
+  const canvas = document.getElementById('snakeCanvas');
+  const ctx = canvas.getContext('2d');
+  const grid = 16, size = 320;
+  let snake, dir, food, gameLoop;
 
-  <!-- ДІАЛОГ ДОДАТИ/РЕДАГУВАТИ -->
-  <dialog id="clientDialog">
-    <form method="dialog" id="clientForm">
-      <h3 id="dialogTitle">Новий клієнт</h3>
-      <input type="hidden" id="clientId">
-      <label>Ім’я <input id="name" required></label>
-      <label>Вулиця <input id="street"></label>
-      <label>Адреса <input id="address"></label>
-      <label>Телефон <input id="phone" type="tel" placeholder="+31 6 12 34 56 78"></label>
-      <label>Нотатки <textarea id="notes" rows="3"></textarea></label>
+  function startSnake() {
+    snake = [{x:8*grid, y:8*grid}];
+    dir = {x:1, y:0};
+    food = randCell();
+    modal.showModal();
+    gameLoop = setInterval(step, 120);
+  }
 
-      <fieldset>
-        <legend>Розклад</legend>
-        <label>День тижня
-          <select id="weekday">
-            <option value="2">Пн</option><option value="3">Вт</option><option value="4">Ср</option>
-            <option value="5">Чт</option><option value="6">Пт</option><option value="7">Сб</option><option value="1">Нд</option>
-          </select>
-        </label>
-        <label>Повторення
-          <select id="frequency">
-            <option value="1">Щотижня</option>
-            <option value="2">Раз на 2 тижні</option>
-          </select>
-        </label>
-      </fieldset>
+  function randCell(){
+    return {
+      x: Math.floor(Math.random()*20)*grid,
+      y: Math.floor(Math.random()*20)*grid
+    };
+  }
 
-      <fieldset>
-        <legend>Нагадування</legend>
-        <label>Час <input id="remTime" type="time" value="09:00"></label>
-        <label>За скільки хв нагадати <input id="remOffset" type="number" value="0" min="0" max="240" step="5"></label>
-      </fieldset>
+  function step(){
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(0,0,size,size);
 
-      <menu>
-        <button value="cancel">Скасувати</button>
-        <button id="saveBtn" value="default">Зберегти</button>
-      </menu>
-    </form>
-  </dialog>
+    // малюємо змійку
+    for(let i=0;i<snake.length;i++){
+      ctx.fillStyle = i===0? '#60a5fa':'#94a3b8';
+      ctx.fillRect(snake[i].x, snake[i].y, grid-1, grid-1);
+    }
 
-  <!-- ДІАЛОГ ПЕРЕГЛЯДУ -->
-  <dialog id="clientViewDialog">
-    <div class="view-card">
-      <h3 id="vName"></h3>
-      <div class="v-row"><span class="v-label">Адреса:</span> <span id="vAddress"></span></div>
-      <div class="v-row"><span class="v-label">Вулиця:</span> <span id="vStreet"></span></div>
-      <div class="v-row"><span class="v-label">Телефон:</span> <a id="vPhone" href="#" class="link"></a></div>
-      <div class="v-row"><span class="v-label">Нотатки:</span></div>
-      <div id="vNotes" class="v-notes"></div>
-      <menu><button id="vClose">Закрити</button></menu>
-    </div>
-  </dialog>
+    // малюємо їжу
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(food.x, food.y, grid-1, grid-1);
 
-  <!-- ПОВНОЕКРАННА ЗМІЙКА -->
-  <dialog id="snakeDialog" class="snake-full">
-    <div class="snake-topbar">
-      <div class="snake-scores">
-        <span id="scoreLbl">Очки: 0</span>
-        <span id="bestLbl">Рекорд: 0</span>
-      </div>
-      <div class="snake-actions">
-        <button class="btn" id="btnPause">Пауза</button>
-        <button class="btn" id="btnRestart">Спочатку</button>
-        <button class="btn danger" id="btnCloseSnake">Закрити</button>
-      </div>
-    </div>
-    <div class="snake-wrap">
-      <canvas id="snakeCanvas" width="320" height="320"></canvas>
-    </div>
-    <div class="game-hint">Тицяй на сторону поля, щоб повертати змійку. Клавіатура: стрілки/WASD.</div>
-  </dialog>
+    const head = {...snake[0]};
+    head.x += dir.x*grid;
+    head.y += dir.y*grid;
 
-  <script src="app.js"></script>
+    // перевірка на програш
+    if(
+      head.x<0 || head.x>=size ||
+      head.y<0 || head.y>=size ||
+      snake.some((s,i)=>i>0 && s.x===head.x && s.y===head.y)
+    ){
+      clearInterval(gameLoop);
+      modal.close();
+      return;
+    }
 
-  <!-- Кнопка Оновити: чистить кеш і SW, клієнтів не чіпає -->
-  <script>
-  document.getElementById('refreshBtn')?.addEventListener('click', async () => {
-    try {
-      if ('caches' in window) {
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-      }
-      if ('serviceWorker' in navigator) {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister()));
-      }
-    } catch(e) { console.warn(e); }
-    location.reload();
+    snake.unshift(head);
+
+    if(head.x===food.x && head.y===food.y) {
+      food = randCell();
+    } else {
+      snake.pop();
+    }
+  }
+
+  function setDirTowards(x,y){
+    const head = snake[0];
+    const dx = x - head.x;
+    const dy = y - head.y;
+    if(Math.abs(dx) > Math.abs(dy))
+      dir = {x: dx>0?1:-1, y:0};
+    else
+      dir = {x:0, y: dy>0?1:-1};
+  }
+
+  // керування по кліку
+  canvas.addEventListener('mousedown', e => {
+    const rect = canvas.getBoundingClientRect();
+    setDirTowards(
+      Math.floor((e.clientX-rect.left)/grid)*grid,
+      Math.floor((e.clientY-rect.top)/grid)*grid
+    );
   });
-  </script>
+
+  // керування по тапу
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    const rect = canvas.getBoundingClientRect();
+    setDirTowards(
+      Math.floor((t.clientX-rect.left)/grid)*grid,
+      Math.floor((t.clientY-rect.top)/grid)*grid
+    );
+  }, {passive:false});
+
+  banner.onclick = startSnake;
+  closeBtn.onclick = ()=>{
+    clearInterval(gameLoop);
+    modal.close();
+  };
+</script>
+
 </body>
 </html>
