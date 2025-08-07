@@ -39,7 +39,7 @@ menu #saveBtn { background:var(--brand); color:white; border:none; }
 }
 
 /* Спецкнопка для "Оновити" */
-.ghost { background:white; border:1px solid #e5e7eb; border-radius:12px; padding:10px 14px; }
+.ghost { background:black; border:1px solid #e5e7eb; border-radius:12px; padding:10px 14px; }
 
 /* Перегляд клієнта */
 .view-card { padding:16px; }
