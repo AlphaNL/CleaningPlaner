@@ -100,11 +100,30 @@ form.addEventListener('submit', async (e) => {
 function clientRow(c){
   const li = document.createElement('li');
 
+  // аватар-ініціал
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = (c.name?.trim()?.[0] || '•').toUpperCase();
+
   const left = document.createElement('div');
   left.className = 'grow';
 
   const title = document.createElement('div');
-  title.textContent = c.name;
+  title.style.display = 'flex';
+  title.style.alignItems = 'center';
+  title.style.gap = '8px';
+
+  const nameEl = document.createElement('div');
+  nameEl.textContent = c.name;
+
+  // бейдж частоти
+  const badge = document.createElement('span');
+  badge.className = 'badge';
+  const s = (c.schedules && c.schedules[0]) || {frequency:1};
+  badge.textContent = (s.frequency === 2) ? 'кожні 2 тижні' : 'щотижня';
+
+  title.appendChild(nameEl);
+  title.appendChild(badge);
 
   const sub = document.createElement('div');
   sub.className = 'muted';
@@ -112,7 +131,7 @@ function clientRow(c){
 
   const phone = document.createElement('div');
   phone.className = 'phone';
-  phone.textContent = (c.phone || '');        // ← показує номер під адресою
+  phone.textContent = (c.phone || '');
 
   left.appendChild(title);
   left.appendChild(sub);
@@ -120,28 +139,18 @@ function clientRow(c){
 
   const actions = document.createElement('div');
   actions.className = 'actions';
+  const edit = document.createElement('button'); edit.className='btn'; edit.textContent='Редагувати';
+  const del  = document.createElement('button'); del.className='btn danger'; del.textContent='Видалити';
+  edit.onclick=(e)=>{ e.stopPropagation(); editClient(c); };
+  del.onclick =async (e)=>{ e.stopPropagation(); await deleteClient(c.id); refresh(); };
+  actions.appendChild(edit); actions.appendChild(del);
 
-  const edit = document.createElement('button');
-  edit.className = 'btn';
-  edit.textContent = 'Редагувати';
-
-  const del = document.createElement('button');
-  del.className = 'btn danger';
-  del.textContent = 'Видалити';
-
-  edit.onclick = (e) => { e.stopPropagation(); editClient(c); };
-  del.onclick  = async (e) => { e.stopPropagation(); await deleteClient(c.id); refresh(); };
-
-  actions.appendChild(edit);
-  actions.appendChild(del);
-
+  li.appendChild(avatar);
   li.appendChild(left);
   li.appendChild(actions);
-
-  li.onclick = () => viewClient(c);           // тап — відкриває картку
+  li.onclick = ()=>viewClient(c);
   return li;
 }
-
 /* Edit client */
 function editClient(c){
   document.getElementById('clientId').value=c.id;
