@@ -1,11 +1,10 @@
-
 <!doctype html>
 <html lang="uk">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Clean Planner</title>
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#4f82ff">
   <link rel="apple-touch-icon" href="assets/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,7 +27,7 @@
     <section class="card">
       <h2>Клієнти</h2>
       <div class="toolbar">
-        <input id="search" placeholder="Пошук по імені/вулиці/адресі" />
+        <input id="search" placeholder="Пошук по імені/вулиці/адресі/телефону" />
       </div>
       <ul id="clientsList" class="list"></ul>
     </section>
@@ -39,6 +38,7 @@
     </section>
   </main>
 
+  <!-- Діалог ДОДАТИ/РЕДАГУВАТИ -->
   <dialog id="clientDialog">
     <form method="dialog" id="clientForm">
       <h3 id="dialogTitle">Новий клієнт</h3>
@@ -46,7 +46,8 @@
       <label>Ім’я <input id="name" required></label>
       <label>Вулиця <input id="street"></label>
       <label>Адреса <input id="address"></label>
-      <label>Нотатки <textarea id="notes" rows="3"></textarea></label>
+      <label>Телефон <input id="phone" type="tel" placeholder="+31 6 12 34 56 78"></label>
+
       <fieldset>
         <legend>Розклад</legend>
         <label>День тижня
@@ -62,16 +63,31 @@
           </select>
         </label>
       </fieldset>
+
       <fieldset>
         <legend>Нагадування</legend>
         <label>Час <input id="remTime" type="time" value="09:00"></label>
         <label>За скільки хв нагадати <input id="remOffset" type="number" value="0" min="0" max="240" step="5"></label>
       </fieldset>
+
       <menu>
         <button value="cancel">Скасувати</button>
         <button id="saveBtn" value="default">Зберегти</button>
       </menu>
     </form>
+  </dialog>
+
+  <!-- Діалог ПЕРЕГЛЯДУ -->
+  <dialog id="clientViewDialog">
+    <div class="view-card">
+      <h3 id="vName"></h3>
+      <div class="v-row"><span class="v-label">Адреса:</span> <span id="vAddress"></span></div>
+      <div class="v-row"><span class="v-label">Вулиця:</span> <span id="vStreet"></span></div>
+      <div class="v-row"><span class="v-label">Телефон:</span> <a id="vPhone" href="#" class="link"></a></div>
+      <div class="v-row"><span class="v-label">Нотатки:</span></div>
+      <div id="vNotes" class="v-notes"></div>
+      <menu><button id="vClose">Закрити</button></menu>
+    </div>
   </dialog>
 
   <script src="app.js"></script>
