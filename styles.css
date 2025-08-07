@@ -1,7 +1,6 @@
-
 :root { --bg:#f5f7ff; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --brand:#4f82ff; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji'; }
+html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans'; }
 header { position:sticky; top:0; background:var(--bg); padding:12px 16px; display:flex; gap:12px; align-items:center; border-bottom:1px solid #e5e7eb; }
 header h1 { font-size:20px; font-weight:700; margin:0; flex:1; }
 header button { background:var(--brand); color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:600; }
@@ -19,7 +18,7 @@ main { padding:16px; display:flex; flex-direction:column; gap:16px; }
 .actions { margin-left:auto; display:flex; gap:8px; }
 .btn { padding:8px 10px; border-radius:10px; border:1px solid #e5e7eb; background:white; }
 .btn.danger { border-color:#fecaca; background:#fee2e2; }
-.muted { color:var(--muted); padding:8px; }
+.muted { color:var(--muted); padding:4px 0; }
 dialog { border:none; border-radius:16px; padding:0; width:min(520px, 92vw); }
 dialog form { padding:12px; }
 label { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; font-size:14px; }
@@ -28,3 +27,11 @@ menu { display:flex; gap:10px; justify-content:flex-end; padding:0; margin:12px 
 menu button { padding:10px 14px; border-radius:12px; border:1px solid #e5e7eb; background:white; }
 menu #saveBtn { background:var(--brand); color:white; border:none; }
 @media (display-mode: standalone) { header { padding-top:calc(env(safe-area-inset-top)); } body { padding-bottom:calc(env(safe-area-inset-bottom)); } }
+
+/* Перегляд клієнта */
+.view-card { padding:16px; }
+.v-row { display:flex; gap:8px; margin:6px 0; }
+.v-label { width:90px; color:#64748b; }
+.v-notes { white-space:pre-wrap; background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:10px; }
+.link { color:#2563eb; text-decoration:none; }
+.list .phone { font-size:12px; color:#64748b; }
