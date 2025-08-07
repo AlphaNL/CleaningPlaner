@@ -33,9 +33,18 @@
       <ul id="clientsList" class="list"></ul>
     </section>
 
+    <!-- ЗМІЙКА -->
     <section class="card">
-      <h2>Графік (7 днів)</h2>
-      <canvas id="chart" width="320" height="160"></canvas>
+      <h2>Змійка</h2>
+      <canvas id="snake" width="320" height="320"></canvas>
+      <div class="game-ui">
+        <span id="scoreLbl">Очки: 0</span>
+        <span id="bestLbl">Рекорд: 0</span>
+        <div class="spacer"></div>
+        <button class="btn" id="btnPause">Пауза</button>
+        <button class="btn" id="btnRestart">Спочатку</button>
+      </div>
+      <div class="game-hint">Керуй свайпами (на телефоні) або стрілками / WASD.</div>
     </section>
   </main>
 
@@ -94,17 +103,17 @@
 
   <script src="app.js"></script>
 
-  <!-- КНОПКА ОНОВЛЕННЯ: очищає CacheStorage + SW, НЕ чіпає IndexedDB -->
+  <!-- Кнопка Оновити: чистить кеш і SW, клієнтів не чіпає -->
   <script>
   document.getElementById('refreshBtn')?.addEventListener('click', async () => {
     try {
       if ('caches' in window) {
-        const names = await caches.keys();
-        for (const n of names) await caches.delete(n);
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
       }
       if ('serviceWorker' in navigator) {
         const regs = await navigator.serviceWorker.getRegistrations();
-        for (const r of regs) await r.unregister();
+        await Promise.all(regs.map(r => r.unregister()));
       }
     } catch(e) { console.warn(e); }
     location.reload();
