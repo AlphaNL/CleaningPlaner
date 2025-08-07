@@ -13,10 +13,14 @@
 </head>
 <body>
   <header>
-    <h1>Мій розклад</h1>
-    <button id="addClientBtn">+ Клієнт</button>
-    <button id="refreshBtn" class="ghost">Оновити</button>
-  </header>
+  <h1>Мій розклад</h1>
+  <button class="ghost" id="refreshBtn">Оновити</button>
+  <button id="addBtn">+ Клієнт</button>
+<header>
+  <h1>Мій розклад</h1>
+  <button class="ghost" id="refreshBtn">Оновити</button>
+  <button id="addBtn">+ Клієнт</button>
+</header>
 
   <main>
     <section class="card">
@@ -92,5 +96,22 @@
   </dialog>
 
   <script src="app.js"></script>
+    <script>
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+  if ('caches' in window) {
+    const names = await caches.keys();
+    for (let name of names) {
+      await caches.delete(name);
+    }
+  }
+  if ('serviceWorker' in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (let reg of registrations) {
+      await reg.unregister();
+    }
+  }
+  location.reload(true);
+});
+</script>
 </body>
 </html>
