@@ -13,14 +13,10 @@
 </head>
 <body>
   <header>
-  <h1>Мій розклад</h1>
-  <button class="ghost" id="refreshBtn">Оновити</button>
-  <button id="addBtn">+ Клієнт</button>
-<header>
-  <h1>Мій розклад</h1>
-  <button class="ghost" id="refreshBtn">Оновити</button>
-  <button id="addBtn">+ Клієнт</button>
-</header>
+    <h1>Мій розклад</h1>
+    <button id="addClientBtn">+ Клієнт</button>
+    <button id="refreshBtn" class="ghost">Оновити</button>
+  </header>
 
   <main>
     <section class="card">
@@ -43,7 +39,7 @@
     </section>
   </main>
 
-  <!-- Діалог ДОДАТИ/РЕДАГУВАТИ -->
+  <!-- ДІАЛОГ ДОДАТИ/РЕДАГУВАТИ -->
   <dialog id="clientDialog">
     <form method="dialog" id="clientForm">
       <h3 id="dialogTitle">Новий клієнт</h3>
@@ -52,7 +48,8 @@
       <label>Вулиця <input id="street"></label>
       <label>Адреса <input id="address"></label>
       <label>Телефон <input id="phone" type="tel" placeholder="+31 6 12 34 56 78"></label>
-<label>Нотатки <textarea id="notes" rows="3"></textarea></label>
+      <label>Нотатки <textarea id="notes" rows="3"></textarea></label>
+
       <fieldset>
         <legend>Розклад</legend>
         <label>День тижня
@@ -82,7 +79,7 @@
     </form>
   </dialog>
 
-  <!-- Діалог ПЕРЕГЛЯДУ -->
+  <!-- ДІАЛОГ ПЕРЕГЛЯДУ -->
   <dialog id="clientViewDialog">
     <div class="view-card">
       <h3 id="vName"></h3>
@@ -96,22 +93,22 @@
   </dialog>
 
   <script src="app.js"></script>
-    <script>
-document.getElementById('refreshBtn').addEventListener('click', async () => {
-  if ('caches' in window) {
-    const names = await caches.keys();
-    for (let name of names) {
-      await caches.delete(name);
-    }
-  }
-  if ('serviceWorker' in navigator) {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    for (let reg of registrations) {
-      await reg.unregister();
-    }
-  }
-  location.reload(true);
-});
-</script>
+
+  <!-- КНОПКА ОНОВЛЕННЯ: очищає CacheStorage + SW, НЕ чіпає IndexedDB -->
+  <script>
+  document.getElementById('refreshBtn')?.addEventListener('click', async () => {
+    try {
+      if ('caches' in window) {
+        const names = await caches.keys();
+        for (const n of names) await caches.delete(n);
+      }
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) await r.unregister();
+      }
+    } catch(e) { console.warn(e); }
+    location.reload();
+  });
+  </script>
 </body>
 </html>
