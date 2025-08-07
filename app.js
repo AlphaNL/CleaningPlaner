@@ -174,19 +174,24 @@ function viewClient(c){
   viewDialog.showModal();
 }
 
-/* ======================= SNAKE GAME ======================= */
-const can   = document.getElementById('snake');
-const ctx   = can.getContext('2d');
+/* ======================= FULLSCREEN SNAKE ======================= */
+const snakeDialog = document.getElementById('snakeDialog');
+const openSnakeBtn = document.getElementById('openSnake');
+const can = document.getElementById('snakeCanvas');
+const ctx = can.getContext('2d');
 const scoreLbl = document.getElementById('scoreLbl');
 const bestLbl  = document.getElementById('bestLbl');
 const btnPause = document.getElementById('btnPause');
 const btnRestart = document.getElementById('btnRestart');
+const btnCloseSnake = document.getElementById('btnCloseSnake');
 
-const GRID = 16;            // розмір клітинки
-const N    = 20;            // поле N x N
+const GRID = 16;
+const N = 20; // поле N x N (320x320)
+
 let snake, dir, food, loop, speed, score, best, paused=false;
 
 function rndCell(){ return {x:Math.floor(Math.random()*N), y:Math.floor(Math.random()*N)}; }
+
 function resetGame(){
   snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
   dir={x:1,y:0};
@@ -194,16 +199,13 @@ function resetGame(){
   speed=110; score=0; paused=false;
   best = parseInt(localStorage.getItem('snake_best')||'0',10);
   scoreLbl.textContent='Очки: '+score;
-  bestLbl.textContent ='Рекорд: '+best;
+  bestLbl.textContent='Рекорд: '+best;
 }
-function drawCell(x,y,color){
-  ctx.fillStyle=color;
-  ctx.fillRect(x*GRID, y*GRID, GRID-1, GRID-1);
-}
+function drawCell(x,y,color){ ctx.fillStyle=color; ctx.fillRect(x*GRID,y*GRID,GRID-1,GRID-1); }
+
 function step(){
   if(paused) return;
   const head={x:(snake[0].x+dir.x+N)%N, y:(snake[0].y+dir.y+N)%N};
-  // self hit?
   if (snake.some((s,i)=>i>0 && s.x===head.x && s.y===head.y)){
     resetGame();
   } else {
@@ -211,20 +213,14 @@ function step(){
     if (head.x===food.x && head.y===food.y){
       score++; scoreLbl.textContent='Очки: '+score;
       if(score>best){ best=score; localStorage.setItem('snake_best', String(best)); bestLbl.textContent='Рекорд: '+best; }
-      food=rndCell();
-      if (speed>60) speed-=3;  // прискорення
-    } else {
-      snake.pop();
-    }
+      food=rndCell(); if (speed>60) speed-=3;
+    } else snake.pop();
   }
 
-  // draw
   ctx.clearRect(0,0,can.width,can.height);
-  // сітка легка
   ctx.strokeStyle='rgba(255,255,255,.05)';
   for(let i=0;i<=N;i++){ ctx.beginPath(); ctx.moveTo(i*GRID,0); ctx.lineTo(i*GRID,N*GRID); ctx.stroke(); }
   for(let i=0;i<=N;i++){ ctx.beginPath(); ctx.moveTo(0,i*GRID); ctx.lineTo(N*GRID,i*GRID); ctx.stroke(); }
-
   drawCell(food.x, food.y, '#22c55e');
   snake.forEach((s,i)=> drawCell(s.x,s.y, i===0?'#60a5fa':'#94a3b8'));
 
@@ -238,8 +234,9 @@ function setDir(nx,ny){
   dir={x:nx,y:ny};
 }
 
-/* клавіатура */
+/* керування клавіатурою */
 window.addEventListener('keydown', e=>{
+  if (!snakeDialog.open) return;
   const k=e.key.toLowerCase();
   if(k==='arrowup'||k==='w') setDir(0,-1);
   else if(k==='arrowdown'||k==='s') setDir(0,1);
@@ -248,28 +245,56 @@ window.addEventListener('keydown', e=>{
   else if(k===' '){ paused=!paused; if(!paused) step(); }
 });
 
-/* свайпи */
-let touchStart=null;
-can.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; touchStart={x:t.clientX,y:t.clientY}; }, {passive:true});
-can.addEventListener('touchend', e=>{
-  if(!touchStart) return;
-  const t=e.changedTouches[0];
-  const dx=t.clientX-touchStart.x, dy=t.clientY-touchStart.y;
-  if(Math.abs(dx)>Math.abs(dy)){
-    if(dx>20) setDir(1,0); else if(dx<-20) setDir(-1,0);
-  }else{
-    if(dy>20) setDir(0,1); else if(dy<-20) setDir(0,-1);
-  }
-  touchStart=null;
-});
+/* ТАП-НАПРЯМОК + блок скролу */
+function turnByPoint(px, py){
+  const rect = can.getBoundingClientRect();
+  const x = px - rect.left, y = py - rect.top;
+  const headX = (snake[0].x + 0.5) * GRID * (rect.width / (N*GRID));
+  const headY = (snake[0].y + 0.5) * GRID * (rect.height / (N*GRID));
+  const dx = x - headX, dy = y - headY;
+  if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 1 : -1, 0);
+  else                             setDir(0, dy > 0 ? 1 : -1);
+}
 
+can.addEventListener('touchmove', e => e.preventDefault(), { passive:false });
+can.addEventListener('touchstart', e => {
+  const t = e.changedTouches[0];
+  turnByPoint(t.clientX, t.clientY);
+  e.preventDefault();
+}, { passive:false });
+can.addEventListener('mousedown', e => { turnByPoint(e.clientX, e.clientY); });
+
+/* відкриття/закриття діалогу гри */
+function openSnake(){
+  document.body.style.overflow='hidden';
+  snakeDialog.showModal();
+  fitCanvas();
+  start();
+}
+function closeSnake(){
+  snakeDialog.close();
+  document.body.style.overflow='';
+  paused=true;
+  clearTimeout(loop);
+}
+
+/* ресайз канви під вікно */
+function fitCanvas(){
+  // реальний рендер завжди 320x320, канва масштабується через CSS
+  can.width  = GRID * N;
+  can.height = GRID * N;
+}
+window.addEventListener('resize', ()=>{ if(snakeDialog.open) fitCanvas(); });
+
+document.getElementById('openSnake')?.addEventListener('click', openSnake);
+btnCloseSnake?.addEventListener('click', closeSnake);
 btnPause?.addEventListener('click', ()=>{ paused=!paused; if(!paused) step(); });
-btnRestart?.addEventListener('click', ()=>{ start(); });
+btnRestart?.addEventListener('click', ()=> start() );
 
 /* ======================= BOOT ======================= */
 async function requestNotif(){ if(!('Notification'in window)) return; if(Notification.permission==='default'){ try{ await Notification.requestPermission(); }catch{} } }
 
 window.addEventListener('load', async ()=>{
   if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('./service-worker.js'); }catch{} }
-  await openDB(); await requestNotif(); refresh(); start();
+  await openDB(); await requestNotif(); refresh();
 });
