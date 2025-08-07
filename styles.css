@@ -1,38 +1,45 @@
 :root { --bg:#f5f7ff; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --brand:#4f82ff; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans'; }
+
 header { position:sticky; top:0; background:var(--bg); padding:12px 16px; display:flex; gap:12px; align-items:center; border-bottom:1px solid #e5e7eb; }
 header h1 { font-size:20px; font-weight:700; margin:0; flex:1; }
 header button { background:var(--brand); color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:600; }
+
 main { padding:16px; display:flex; flex-direction:column; gap:16px; }
 .card { background:var(--card); border-radius:16px; padding:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); }
 .card h2 { margin:4px 6px 10px; font-size:16px; }
+
 .toolbar { display:flex; gap:8px; padding:8px; }
 .toolbar input { flex:1; padding:10px; border:1px solid #e5e7eb; border-radius:12px; }
+
 .list { list-style:none; margin:0; padding:0; }
 .list li { padding:10px 8px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px; }
 .list li:last-child { border-bottom:none; }
-.badge { background:#eef2ff; color:#3730a3; font-size:12px; padding:3px 8px; border-radius:999px; }
+.muted { color:var(--muted); padding:4px 0; }
+
 .row { display:flex; gap:8px; align-items:center; }
 .row .grow { flex:1; }
 .actions { margin-left:auto; display:flex; gap:8px; }
 .btn { padding:8px 10px; border-radius:10px; border:1px solid #e5e7eb; background:white; }
 .btn.danger { border-color:#fecaca; background:#fee2e2; }
-.muted { color:var(--muted); padding:4px 0; }
+
+/* dialogs & form */
 dialog { border:none; border-radius:16px; padding:0; width:min(520px, 92vw); }
 dialog form { padding:12px; }
 label { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; font-size:14px; }
 input, textarea, select { padding:10px; border:1px solid #e5e7eb; border-radius:12px; font-size:16px; }
 menu { display:flex; gap:10px; justify-content:flex-end; padding:0; margin:12px 0 0; }
 menu button { padding:10px 14px; border-radius:12px; border:1px solid #e5e7eb; background:white; }
-.ghost {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 10px 14px;
-}
 menu #saveBtn { background:var(--brand); color:white; border:none; }
-@media (display-mode: standalone) { header { padding-top:calc(env(safe-area-inset-top)); } body { padding-bottom:calc(env(safe-area-inset-bottom)); } }
+
+@media (display-mode: standalone) {
+  header { padding-top:calc(env(safe-area-inset-top)); }
+  body   { padding-bottom:calc(env(safe-area-inset-bottom)); }
+}
+
+/* Спецкнопка для "Оновити" */
+.ghost { background:white; border:1px solid #e5e7eb; border-radius:12px; padding:10px 14px; }
 
 /* Перегляд клієнта */
 .view-card { padding:16px; }
@@ -40,4 +47,6 @@ menu #saveBtn { background:var(--brand); color:white; border:none; }
 .v-label { width:90px; color:#64748b; }
 .v-notes { white-space:pre-wrap; background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:10px; }
 .link { color:#2563eb; text-decoration:none; }
+
+/* Телефон у списку */
 .list .phone { font-size:12px; color:#64748b; }
