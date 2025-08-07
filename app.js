@@ -25,22 +25,22 @@ async function deleteClient(id){ return new Promise((res,rej)=>{ const r=tx('cli
 /* Scheduling */
 function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
 function tomorrow(){ const x=new Date(); x.setDate(x.getDate()+1); return x; }
-function weekdayOf(date){ const w = date.getDay(); return (w===0)?1:(w+1); } // 1=Mon..7=Sun
+function weekdayOf(date){ const w=date.getDay(); return (w===0)?1:(w+1); } // 1=Mon..7=Sun
 function nextOccurrence(from, schedule){
-  const cal = new Date(from);
-  let daysAhead = (schedule.weekday - weekdayOf(cal) + 7) % 7; if (daysAhead===0) daysAhead = 7;
-  const firstHit = new Date(startOfDay(cal).getTime() + daysAhead*86400000);
-  if (schedule.frequency === 2) {
-    const start = new Date(schedule.startDate || Date.now());
-    const weeks = Math.floor((startOfDay(firstHit)-startOfDay(start))/ (7*86400000));
-    if (weeks % 2 !== 0) return new Date(firstHit.getTime() + 7*86400000);
+  const cal=new Date(from);
+  let daysAhead=(schedule.weekday - weekdayOf(cal) + 7) % 7; if(daysAhead===0) daysAhead=7;
+  const firstHit=new Date(startOfDay(cal).getTime()+daysAhead*86400000);
+  if (schedule.frequency===2){
+    const start=new Date(schedule.startDate||Date.now());
+    const weeks=Math.floor((startOfDay(firstHit)-startOfDay(start))/(7*86400000));
+    if (weeks%2!==0) return new Date(firstHit.getTime()+7*86400000);
   }
   return firstHit;
 }
 function isScheduledOn(date, schedule){
-  const from = new Date(date.getTime() - 86400000);
-  const occ = nextOccurrence(from, schedule);
-  return startOfDay(occ).getTime() === startOfDay(date).getTime();
+  const from=new Date(date.getTime()-86400000);
+  const occ=nextOccurrence(from, schedule);
+  return startOfDay(occ).getTime()===startOfDay(date).getTime();
 }
 
 /* Mini chart */
@@ -113,7 +113,7 @@ function clientRow(c){
   actions.appendChild(edit); actions.appendChild(del);
 
   li.appendChild(left); li.appendChild(actions);
-  li.onclick=()=>viewClient(c); // перегляд по тапу на рядок
+  li.onclick=()=>viewClient(c); // перегляд по тапу
   return li;
 }
 
@@ -124,7 +124,7 @@ function editClient(c){
   document.getElementById('street').value=c.street||'';
   document.getElementById('address').value=c.address||'';
   document.getElementById('phone').value=c.phone||'';
-  document.getElementById('notes').value=c.notes||'';
+  const notesEl=document.getElementById('notes'); if (notesEl) notesEl.value=c.notes||'';
   const s=(c.schedules&&c.schedules[0])||{weekday:2,frequency:1};
   document.getElementById('weekday').value=s.weekday;
   document.getElementById('frequency').value=s.frequency;
@@ -150,14 +150,14 @@ async function refresh(){
   clientsList.innerHTML='';
   filtered.sort((a,b)=>a.name.localeCompare(b.name)).forEach(c=>clientsList.appendChild(clientRow(c)));
 
-  // Tomorrow
+  // Завтра
   const tmr=tomorrow();
   const tmrClients=items.filter(c=>(c.schedules||[]).some(s=>isScheduledOn(tmr,s)));
   tomorrowList.innerHTML='';
   tmrClients.forEach(c=>{ const li=document.createElement('li'); li.textContent=c.name+' — '+(c.address||c.street||''); tomorrowList.appendChild(li); });
   tomorrowEmpty.style.display=tmrClients.length?'none':'block';
 
-  // Chart
+  // Графік
   const arr=[]; for(let i=0;i<7;i++){ const day=new Date(); day.setDate(day.getDate()+i);
     const count=items.filter(c=>(c.schedules||[]).some(s=>isScheduledOn(day,s))).length; arr.push({day,count}); }
   const ctx=document.getElementById('chart').getContext('2d'); renderChart(ctx,arr);
@@ -184,24 +184,7 @@ function viewClient(c){
 
 /* Notifications (best-effort) + SW */
 async function requestNotif(){ if(!('Notification'in window)) return; if(Notification.permission==='default'){ try{ await Notification.requestPermission(); }catch{} } }
-async function forceRefreshAssets() {
-  try {
-    if ('caches' in window) {
-      const keys = await caches.keys();
-      await Promise.all(keys.map(k => caches.delete(k))); // тільки Cache Storage
-    }
-    if ('serviceWorker' in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r => r.unregister()));   // відписати старий SW
-    }
-  } catch(e) {
-    console.warn('Force refresh error:', e);
-  } finally {
-    window.location.reload(); // перезавантажити апку
-  }
-}
 
-document.getElementById('refreshBtn')?.addEventListener('click', forceRefreshAssets);
 window.addEventListener('load', async () => {
   if ('serviceWorker' in navigator) {
     try { await navigator.serviceWorker.register('./service-worker.js'); } catch {}
