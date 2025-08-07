@@ -1,7 +1,7 @@
 {
   "name": "Clean Planner",
   "short_name": "CleanPlanner",
-  "start_url": "./index.html",
+  "start_url": "https://alphanl.github.io/CleaningPlaner/",
   "display": "standalone",
   "background_color": "#f5f7ff",
   "theme_color": "#4f82ff",
