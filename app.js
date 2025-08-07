@@ -98,22 +98,47 @@ form.addEventListener('submit', async (e) => {
 
 /* Build list rows */
 function clientRow(c){
-  const li=document.createElement('li');
-  const left=document.createElement('div'); left.className='grow';
-  const title=document.createElement('div'); title.textContent=c.name;
-  const sub=document.createElement('div'); sub.className='muted'; sub.textContent=(c.address||c.street||'');
-  const phone=document.createElement('div'); phone.className='phone'; phone.textContent=(c.phone||'');
-  left.appendChild(title); left.appendChild(sub); left.appendChild(phone);
+  const li = document.createElement('li');
 
-  const actions=document.createElement('div'); actions.className='actions';
-  const edit=document.createElement('button'); edit.className='btn'; edit.textContent='Редагувати';
-  const del=document.createElement('button'); del.className='btn danger'; del.textContent='Видалити';
-  edit.onclick=(e)=>{ e.stopPropagation(); editClient(c); };
-  del.onclick=async (e)=>{ e.stopPropagation(); await deleteClient(c.id); refresh(); };
-  actions.appendChild(edit); actions.appendChild(del);
+  const left = document.createElement('div');
+  left.className = 'grow';
 
-  li.appendChild(left); li.appendChild(actions);
-  li.onclick=()=>viewClient(c); // перегляд по тапу
+  const title = document.createElement('div');
+  title.textContent = c.name;
+
+  const sub = document.createElement('div');
+  sub.className = 'muted';
+  sub.textContent = (c.address || c.street || '');
+
+  const phone = document.createElement('div');
+  phone.className = 'phone';
+  phone.textContent = (c.phone || '');        // ← показує номер під адресою
+
+  left.appendChild(title);
+  left.appendChild(sub);
+  left.appendChild(phone);
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+
+  const edit = document.createElement('button');
+  edit.className = 'btn';
+  edit.textContent = 'Редагувати';
+
+  const del = document.createElement('button');
+  del.className = 'btn danger';
+  del.textContent = 'Видалити';
+
+  edit.onclick = (e) => { e.stopPropagation(); editClient(c); };
+  del.onclick  = async (e) => { e.stopPropagation(); await deleteClient(c.id); refresh(); };
+
+  actions.appendChild(edit);
+  actions.appendChild(del);
+
+  li.appendChild(left);
+  li.appendChild(actions);
+
+  li.onclick = () => viewClient(c);           // тап — відкриває картку
   return li;
 }
 
