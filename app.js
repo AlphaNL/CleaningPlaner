@@ -184,7 +184,24 @@ function viewClient(c){
 
 /* Notifications (best-effort) + SW */
 async function requestNotif(){ if(!('Notification'in window)) return; if(Notification.permission==='default'){ try{ await Notification.requestPermission(); }catch{} } }
+async function forceRefreshAssets() {
+  try {
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k))); // тільки Cache Storage
+    }
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));   // відписати старий SW
+    }
+  } catch(e) {
+    console.warn('Force refresh error:', e);
+  } finally {
+    window.location.reload(); // перезавантажити апку
+  }
+}
 
+document.getElementById('refreshBtn')?.addEventListener('click', forceRefreshAssets);
 window.addEventListener('load', async () => {
   if ('serviceWorker' in navigator) {
     try { await navigator.serviceWorker.register('./service-worker.js'); } catch {}
