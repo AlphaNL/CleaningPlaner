@@ -11,88 +11,141 @@
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
-  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial}
+html,body{
+  margin:0; padding:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial
+}
 
 header{
   position:sticky; top:0; z-index:50;
   padding:14px 16px; display:flex; align-items:center; gap:12px;
   background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff;
-  border-bottom:1px solid rgba(255,255,255,.15); backdrop-filter:saturate(140%) blur(6px);
+  border-bottom:1px solid rgba(255,255,255,.15);
+  backdrop-filter:saturate(140%) blur(6px);
 }
-header h1{margin:0; font-size:22px; font-weight:800; letter-spacing:.2px; flex:1}
-header button{border:none; border-radius:999px; padding:10px 16px; background:#fff; color:#111827; font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,.12)}
-header .ghost{background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.35); box-shadow:none}
+header h1{
+  margin:0; font-size:22px; font-weight:800; letter-spacing:.2px; flex:1
+}
+header button{
+  border:none; border-radius:999px; padding:10px 16px;
+  background:#fff; color:#111827; font-weight:700;
+  box-shadow:0 6px 16px rgba(0,0,0,.12)
+}
+header .ghost{
+  background:rgba(255,255,255,.12); color:#fff;
+  border:1px solid rgba(255,255,255,.35); box-shadow:none
+}
 
-main{padding:16px; display:flex; flex-direction:column; gap:16px}
+main{
+  padding:16px; display:flex; flex-direction:column; gap:16px
+}
 
-.card{background:var(--card); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); border:1px solid rgba(17,24,39,.04)}
+.card{
+  background:var(--card); border-radius:var(--radius);
+  padding:14px; box-shadow:var(--shadow);
+  border:1px solid rgba(17,24,39,.04)
+}
 .card h2{margin:0 4px 12px; font-size:18px; font-weight:800}
 
 .toolbar{display:flex; gap:10px; padding:6px 2px}
-.toolbar input{flex:1; padding:12px 14px; border:1px solid #e5e7eb; border-radius:14px; background:#f8fafc; outline:none}
+.toolbar input{
+  flex:1; padding:12px 14px;
+  border:1px solid #e5e7eb; border-radius:14px;
+  background:#f8fafc; outline:none
+}
 
 .list{list-style:none; margin:0; padding:0}
-.list li{display:flex; align-items:center; gap:12px; padding:12px 10px; border-bottom:1px solid #f1f5f9}
+.list li{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 10px; border-bottom:1px solid #f1f5f9
+}
 .list li:last-child{border-bottom:none}
 .muted{color:var(--muted)}
 .phone{font-size:12px; color:#94a3b8}
 .row .grow{flex:1}
 .actions{margin-left:auto; display:flex; gap:8px}
-.btn{padding:8px 12px; border-radius:12px; border:1px solid #e5e7eb; background:#fff}
+.btn{
+  padding:8px 12px; border-radius:12px;
+  border:1px solid #e5e7eb; background:#fff
+}
 .btn.danger{border-color:var(--danger); background:#fee2e2}
 
 /* аватар + бейдж */
-.avatar{width:42px; height:42px; border-radius:50%; display:grid; place-items:center;
-  background:linear-gradient(135deg,#b7c3ff,#e3d0ff); color:#111827; font-weight:800; box-shadow:0 6px 14px rgba(99,102,241,.25)}
-.badge{font-size:12px; padding:4px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700}
+.avatar{
+  width:42px; height:42px; border-radius:50%;
+  display:grid; place-items:center;
+  background:linear-gradient(135deg,#b7c3ff,#e3d0ff);
+  color:#111827; font-weight:800;
+  box-shadow:0 6px 14px rgba(99,102,241,.25)
+}
+.badge{
+  font-size:12px; padding:4px 8px; border-radius:999px;
+  background:#eef2ff; color:#3730a3; font-weight:700
+}
 
 /* діалоги */
-dialog{border:none; border-radius:20px; padding:0; width:min(520px,92vw); box-shadow:var(--shadow)}
+dialog{
+  border:none; border-radius:20px; padding:0;
+  width:min(520px,92vw); box-shadow:var(--shadow)
+}
 dialog form{padding:14px}
-label{display:flex; flex-direction:column; gap:6px; margin-bottom:12px; font-size:14px}
-input,textarea,select{padding:12px; border:1px solid #e5e7eb; border-radius:14px; font-size:16px}
-menu{display:flex; gap:10px; justify-content:flex-end; padding:0 0 12px; margin:0}
-menu button{padding:10px 14px; border-radius:12px; border:1px solid #e5e7eb; background:#fff}
+label{
+  display:flex; flex-direction:column; gap:6px;
+  margin-bottom:12px; font-size:14px
+}
+input,textarea,select{
+  padding:12px; border:1px solid #e5e7eb;
+  border-radius:14px; font-size:16px
+}
+menu{
+  display:flex; gap:10px; justify-content:flex-end;
+  padding:0 0 12px; margin:0
+}
+menu button{
+  padding:10px 14px; border-radius:12px;
+  border:1px solid #e5e7eb; background:#fff
+}
 #saveBtn{background:var(--brand); color:#fff; border:none}
 
 /* перегляд клієнта */
 .view-card{padding:16px}
 .v-row{display:flex; gap:8px; margin:8px 0}
 .v-label{width:96px; color:#64748b}
-.v-notes{white-space:pre-wrap; background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px; padding:10px}
+.v-notes{
+  white-space:pre-wrap; background:#f8fafc;
+  border:1px solid #e5e7eb; border-radius:14px; padding:10px
+}
 .link{color:#2563eb; text-decoration:none}
 
-/* ----- FULLSCREEN SNAKE ----- */
-.snake-full{
-  padding:0; width:100vw; max-width:none; height:100vh; max-height:none;
-  border-radius:0; margin:0;
+/* ---------- SNAKE OVERLAY ---------- */
+#snakeOverlay{
+  display:none; position:fixed; inset:0;
   background:linear-gradient(135deg,#0b1220,#111827);
-  color:#e5e7eb;
+  z-index:9999; flex-direction:column;
 }
-.snake-full::backdrop{ background:rgba(0,0,0,.6) }
-
-.snake-topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; padding: max(14px, env(safe-area-inset-top)) 16px 10px 16px;
+#snakeStartScreen{
+  flex:1; display:flex; align-items:center; justify-content:center;
 }
-.snake-scores{display:flex; gap:12px; font-weight:700}
-.snake-actions{display:flex; gap:8px}
-
-.snake-wrap{
-  display:grid; place-items:center;
-  height: calc(100vh - 140px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  padding: 0 12px;
+#snakeStartScreen img{
+  max-width:90%; border-radius:12px; cursor:pointer;
 }
-
+#snakeGameArea{
+  flex:1; display:none; flex-direction:column;
+}
 #snakeCanvas{
-  width: min(92vw, 92vh); height: auto;
-  background:#0b1220; border-radius:16px; display:block;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
-  touch-action:none; user-select:none; -webkit-user-select:none;
+  background:#0b1220;
+  touch-action:none;
+  width:min(92vw,92vh);
+  align-self:center;
+  margin-top:20px;
+  border-radius:12px;
 }
-
-.game-hint{ text-align:center; color:#94a3b8; font-size:12px; padding:10px 16px 16px }
+.snake-close{
+  border:none; background:#ff3b3b; color:#fff;
+  padding:8px 14px; border-radius:6px; margin:12px;
+}
 
 /* safe areas */
 @supports(padding:max(0px)){
@@ -102,7 +155,11 @@ menu button{padding:10px 14px; border-radius:12px; border:1px solid #e5e7eb; bac
 
 /* dark */
 @media (prefers-color-scheme: dark){
-  :root{--bg:#0f172a; --card:#0b1220; --ink:#e5e7eb; --muted:#94a3b8; --shadow:0 8px 24px rgba(0,0,0,.45)}
+  :root{
+    --bg:#0f172a; --card:#0b1220;
+    --ink:#e5e7eb; --muted:#94a3b8;
+    --shadow:0 8px 24px rgba(0,0,0,.45)
+  }
   header{border-bottom-color:rgba(255,255,255,.08)}
   .toolbar input{background:#0e1626; border-color:#1f2937}
   .card{border-color:#111827}
