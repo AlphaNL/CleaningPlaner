@@ -25,7 +25,7 @@ async function deleteClient(id){return new Promise((res,rej)=>{ const r=tx('clie
 /* ======================= SCHEDULE HELPERS ======================= */
 function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
 function tomorrow(){ const x=new Date(); x.setDate(x.getDate()+1); return x; }
-function weekdayOf(date){ const w=date.getDay(); return (w===0)?1:(w+1); } // 1..7 (Mon..Sun)
+function weekdayOf(date){ const w=date.getDay(); return (w===0)?1:(w+1); }
 function nextOccurrence(from, s){
   const cal=new Date(from);
   let daysAhead = (s.weekday - weekdayOf(cal) + 7) % 7; if(daysAhead===0) daysAhead=7;
@@ -56,7 +56,7 @@ addBtn.addEventListener('click', ()=>{
   dialogEl.showModal();
 });
 
-// ВАЖЛИВО: скасування НЕ має сабмітити форму
+// «Скасувати» — НЕ сабмітить форму
 document.getElementById('cancelBtn').addEventListener('click', ()=>{
   dialogEl.close();
 });
@@ -156,7 +156,7 @@ async function refresh(){
   clientsList.innerHTML='';
   filtered.sort((a,b)=>a.name.localeCompare(b.name)).forEach(c=>clientsList.appendChild(clientRow(c)));
 
-  // План на завтра
+  // Завтра
   const t=tomorrow();
   const tClients=items.filter(c=>(c.schedules||[]).some(s=>isScheduledOn(t,s)));
   tomorrowList.innerHTML='';
@@ -198,7 +198,7 @@ const btnRestart = document.getElementById('btnRestart');
 const btnCloseSnake = document.getElementById('btnCloseSnake');
 
 const GRID = 16;
-const N = 20; // 320x320
+const N = 20;
 let snake, dir, food, loop, speed, score, best, paused=false;
 
 function rndCell(){ return {x:Math.floor(Math.random()*N), y:Math.floor(Math.random()*N)}; }
@@ -272,7 +272,7 @@ can.addEventListener('touchstart', e => {
 }, { passive:false });
 can.addEventListener('mousedown', e => { turnByPoint(e.clientX, e.clientY); });
 
-/* відкриття/закриття діалогу гри */
+/* відкрити/закрити гру */
 function openSnake(){
   document.body.style.overflow='hidden';
   snakeDialog.showModal();
@@ -286,24 +286,33 @@ function closeSnake(){
   paused=true;
   clearTimeout(loop);
 }
-openSnakeBtn?.addEventListener('click', openSnake);
-btnCloseSnake?.addEventListener('click', closeSnake);
-btnPause?.addEventListener('click', ()=>{ paused=!paused; if(!paused) step(); });
-btnRestart?.addEventListener('click', ()=> start() );
+document.getElementById('openSnake')?.addEventListener('click', openSnake);
+document.getElementById('btnCloseSnake')?.addEventListener('click', closeSnake);
+document.getElementById('btnPause')?.addEventListener('click', ()=>{ paused=!paused; if(!paused) step(); });
+document.getElementById('btnRestart')?.addEventListener('click', ()=> start() );
 
-/* ======================= REFRESH (очистити кеш/PWA) ======================= */
-document.getElementById('refreshBtn')?.addEventListener('click', async () => {
+/* ======================= REFRESH BUTTON ======================= */
+const refreshBtn = document.getElementById('refreshBtn');
+if (refreshBtn) refreshBtn.addEventListener('click', async () => {
   try {
+    // закрити усі діалоги
+    document.querySelectorAll('dialog[open]').forEach(d => { try{ d.close(); }catch{} });
+    // Cache Storage
     if ('caches' in window) {
       const keys = await caches.keys();
       await Promise.all(keys.map(k => caches.delete(k)));
     }
+    // Service Worker
     if ('serviceWorker' in navigator) {
       const regs = await navigator.serviceWorker.getRegistrations();
       await Promise.all(regs.map(r => r.unregister()));
     }
-  } catch(e) { console.warn(e); }
-  location.reload();
+  } catch(e) {
+    console.warn('Refresh error:', e);
+  } finally {
+    const url = location.origin + location.pathname + '?v=' + Date.now();
+    location.replace(url);
+  }
 });
 
 /* ======================= BOOT ======================= */
