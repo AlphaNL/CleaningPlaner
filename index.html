@@ -43,7 +43,7 @@
 
   <!-- ДІАЛОГ ДОДАТИ/РЕДАГУВАТИ -->
   <dialog id="clientDialog">
-    <form method="dialog" id="clientForm">
+    <form id="clientForm">
       <h3 id="dialogTitle">Новий клієнт</h3>
       <input type="hidden" id="clientId">
       <label>Ім’я <input id="name" required></label>
@@ -75,8 +75,8 @@
       </fieldset>
 
       <menu>
-        <button value="cancel">Скасувати</button>
-        <button id="saveBtn" value="default">Зберегти</button>
+        <button type="button" id="cancelBtn">Скасувати</button>
+        <button id="saveBtn" type="submit">Зберегти</button>
       </menu>
     </form>
   </dialog>
@@ -115,7 +115,7 @@
 
   <script src="app.js"></script>
 
-  <!-- Кнопка Оновити: чистить кеш і SW, клієнтів не чіпає -->
+  <!-- Кнопка Оновити -->
   <script>
   document.getElementById('refreshBtn')?.addEventListener('click', async () => {
     try {
