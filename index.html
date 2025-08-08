@@ -4,165 +4,186 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clean Planner — Snake Game</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: ui-sans-serif, sans-serif; }
-  body { background: #f2f4ff; color: #0f172a; }
-  .card { max-width: 600px; margin: 20px auto; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-  h2 { font-size: 20px; margin-bottom: 12px; }
+/* Стиль банера */
+.banner {
+  position: relative;
+  cursor: pointer;
+}
+.banner img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
 
-  /* ===== SNAKE OVERLAY ===== */
-  .snake-overlay {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #0b1220; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  .snake-start, .snake-stage { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-  .snake-start-img { width: min(92vw, 1000px); height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
-  .snake-play-hotspot {
-    position: absolute; bottom: calc(50% - 90px); left: 50%; transform: translateX(-50%);
-    width: min(46vw, 420px); height: min(10vw, 80px);
-    background: transparent; border: 2px solid rgba(255,255,255,.08);
-    border-radius: 12px; cursor: pointer;
-  }
-  .snake-close {
-    position: absolute; top: max(16px, env(safe-area-inset-top)); left: max(16px, env(safe-area-inset-left));
-    padding: 10px 14px; border: none; border-radius: 10px; color: #fff; background: #ef4444;
-    box-shadow: 0 8px 24px rgba(239,68,68,.35);
-  }
-  .snake-topbar {
-    position: absolute; top: max(16px, env(safe-area-inset-top)); left: 0; right: 0;
-    display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px;
-  }
-  .snake-score { color: #cbd5e1; font-weight: 700; display: flex; gap: 12px; }
-  .snake-canvas-wrap { width: 100%; display: grid; place-items: center; padding: clamp(8px, 4vw, 24px); }
-  #snakeCanvas {
-    width: min(92vw, 92vh); height: auto; background: #0b1220; border-radius: 16px;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
-    touch-action: none; user-select: none; -webkit-user-select: none;
-  }
-  .snake-hint { position: absolute; bottom: max(14px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; color: #94a3b8; font-size: 12px; }
+/* Модалка для змійки */
+.snake-full {
+  padding:0; width:100vw; max-width:none; height:100vh; max-height:none;
+  border-radius:0; margin:0;
+  background:linear-gradient(135deg,#0b1220,#111827);
+  color:#e5e7eb;
+}
+.snake-full::backdrop{ background:rgba(0,0,0,.6) }
+
+.snake-topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding: max(14px, env(safe-area-inset-top)) 16px 10px 16px;
+}
+.snake-scores{display:flex; gap:12px; font-weight:700}
+.snake-actions{display:flex; gap:8px}
+
+.snake-wrap {
+  display:grid; place-items:center;
+  height: calc(100vh - 140px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  padding: 0 12px;
+}
+
+#snakeCanvas {
+  width: min(92vw, 92vh); height: auto;
+  background:#0b1220; border-radius:16px; display:block;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  touch-action:none; user-select:none; -webkit-user-select:none;
+}
+
+.game-hint {
+  text-align:center; color:#94a3b8; font-size:12px; padding:10px 16px 16px
+}
 </style>
 </head>
 <body>
 
 <main class="card">
   <h2>Гра "Змійка"</h2>
-  <button id="openSnake" style="padding:8px 16px;border:none;background:#3b82f6;color:white;border-radius:8px;cursor:pointer">Грати</button>
+  <div class="banner" id="openSnake">
+    <img src="https://raw.githubusercontent.com/AlphaNL/CleaningPlaner/5d9c580ae8f440fa242188981eec72cc2a536806/FC0A03B0-579F-4F9D-8C47-801A1D3D0698.png" alt="Snake Banner">
+  </div>
 </main>
 
-<!-- Повноекранний оверлей -->
-<div id="snakeOverlay" class="snake-overlay" hidden>
-  <!-- стартовий екран -->
-  <div class="snake-start">
-    <img src="https://raw.githubusercontent.com/AlphaNL/CleaningPlaner/5d9c580ae8f440fa242188981eec72cc2a536806/FC0A03B0-579F-4F9D-8C47-801A1D3D0698.png" alt="Snake start" class="snake-start-img"/>
-    <button id="snakePlayHotspot" class="snake-play-hotspot" aria-label="Play"></button>
-    <button id="snakeClose" class="snake-close">Назад</button>
-  </div>
-  <!-- екран гри -->
-  <div class="snake-stage" hidden>
-    <div class="snake-topbar">
-      <button id="snakeBackInGame" class="snake-close">Назад</button>
-      <div class="snake-score">
-        <span id="scoreLbl">Очки: 0</span>
-        <span id="bestLbl">Рекорд: 0</span>
-      </div>
-      <div style="width:64px"></div>
+<dialog class="snake-full" id="snakeDialog">
+  <div class="snake-topbar">
+    <div class="snake-scores">
+      <span id="scoreLbl">Очки: 0</span>
+      <span id="bestLbl">Рекорд: 0</span>
     </div>
-    <div class="snake-canvas-wrap">
-      <canvas id="snakeCanvas" width="320" height="320"></canvas>
+    <div class="snake-actions">
+      <button id="btnPause">⏸</button>
+      <button id="btnRestart">🔄</button>
+      <button id="btnCloseSnake">❌</button>
     </div>
-    <div class="snake-hint">Тицяй у напрямку від голови змійки, щоб повернути</div>
   </div>
-</div>
+  <div class="snake-wrap">
+    <canvas id="snakeCanvas" width="320" height="320"></canvas>
+  </div>
+  <div class="game-hint">Керуй стрілками або натисканням на екран</div>
+</dialog>
 
 <script>
-(function(){
-  const openBtn = document.getElementById('openSnake');
-  const overlay = document.getElementById('snakeOverlay');
-  const startScreen = overlay.querySelector('.snake-start');
-  const stage = overlay.querySelector('.snake-stage');
-  const playHotspot = document.getElementById('snakePlayHotspot');
-  const closeBtn1 = document.getElementById('snakeClose');
-  const closeBtn2 = document.getElementById('snakeBackInGame');
-  const can = document.getElementById('snakeCanvas');
-  const ctx = can.getContext('2d');
-  const GRID = 16, N = 20;
-  let snake, dir, food, loop, speed, score, best, paused=false;
+const snakeDialog = document.getElementById('snakeDialog');
+const openSnakeBtn = document.getElementById('openSnake');
+const can = document.getElementById('snakeCanvas');
+const ctx = can.getContext('2d');
+const scoreLbl = document.getElementById('scoreLbl');
+const bestLbl  = document.getElementById('bestLbl');
+const btnPause = document.getElementById('btnPause');
+const btnRestart = document.getElementById('btnRestart');
+const btnCloseSnake = document.getElementById('btnCloseSnake');
 
-  function lockScroll(lock){
-    document.documentElement.style.overflow = lock ? 'hidden' : '';
-    document.body.style.overflow = lock ? 'hidden' : '';
+const GRID = 16;
+const N = 20; // поле N x N (320x320)
+
+let snake, dir, food, loop, speed, score, best, paused=false;
+
+function rndCell(){ return {x:Math.floor(Math.random()*N), y:Math.floor(Math.random()*N)}; }
+
+function resetGame(){
+  snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  dir={x:1,y:0};
+  food=rndCell();
+  speed=110; score=0; paused=false;
+  best = parseInt(localStorage.getItem('snake_best')||'0',10);
+  scoreLbl.textContent='Очки: '+score;
+  bestLbl.textContent='Рекорд: '+best;
+}
+function drawCell(x,y,color){ ctx.fillStyle=color; ctx.fillRect(x*GRID,y*GRID,GRID-1,GRID-1); }
+
+function step(){
+  if(paused) return;
+  const head={x:(snake[0].x+dir.x+N)%N, y:(snake[0].y+dir.y+N)%N};
+  if (snake.some((s,i)=>i>0 && s.x===head.x && s.y===head.y)){
+    resetGame();
+  } else {
+    snake.unshift(head);
+    if (head.x===food.x && head.y===food.y){
+      score++; scoreLbl.textContent='Очки: '+score;
+      if(score>best){ best=score; localStorage.setItem('snake_best', String(best)); bestLbl.textContent='Рекорд: '+best; }
+      food=rndCell(); if (speed>60) speed-=3;
+    } else snake.pop();
   }
-  function openOverlay(){
-    overlay.hidden = false;
-    startScreen.hidden = false;
-    stage.hidden = true;
-    lockScroll(true);
-  }
-  function startGame(){
-    startScreen.hidden = true;
-    stage.hidden = false;
-    reset(); step();
-  }
-  function closeOverlay(){
-    overlay.hidden = true;
-    clearTimeout(loop);
-    lockScroll(false);
-  }
-  function rnd(){ return {x:Math.floor(Math.random()*N), y:Math.floor(Math.random()*N)}; }
-  function reset(){
-    snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
-    dir={x:1,y:0}; food=rnd(); speed=110; score=0; paused=false;
-    best = parseInt(localStorage.getItem('snake_best')||'0',10);
-    document.getElementById('scoreLbl').textContent='Очки: '+score;
-    document.getElementById('bestLbl').textContent='Рекорд: '+best;
-  }
-  function drawCell(x,y,c){ ctx.fillStyle=c; ctx.fillRect(x*GRID,y*GRID,GRID-1,GRID-1); }
-  function step(){
-    if(paused) return;
-    const head={x:(snake[0].x+dir.x+N)%N, y:(snake[0].y+dir.y+N)%N};
-    if(snake.some((s,i)=>i>0 && s.x===head.x && s.y===head.y)){ reset(); }
-    else{
-      snake.unshift(head);
-      if(head.x===food.x && head.y===food.y){
-        score++; document.getElementById('scoreLbl').textContent='Очки: '+score;
-        if(score>best){ best=score; localStorage.setItem('snake_best', String(best)); document.getElementById('bestLbl').textContent='Рекорд: '+best; }
-        food=rnd(); if(speed>60) speed-=3;
-      } else snake.pop();
-    }
-    ctx.clearRect(0,0,can.width,can.height);
-    drawCell(food.x,food.y,'#22c55e');
-    snake.forEach((s,i)=>drawCell(s.x,s.y,i===0?'#60a5fa':'#94a3b8'));
-    clearTimeout(loop); loop=setTimeout(step,speed);
-  }
-  function setDir(nx,ny){
-    if (snake.length>1 && (snake[0].x+nx===snake[1].x) && (snake[0].y+ny===snake[1].y)) return;
-    dir={x:nx,y:ny};
-  }
-  function turnByPoint(px,py){
-    const rect=can.getBoundingClientRect();
-    const sx = (px-rect.left)/(rect.width) * N;
-    const sy = (py-rect.top)/(rect.height) * N;
-    const hx = snake[0].x + .5;
-    const hy = snake[0].y + .5;
-    const dx = sx - hx, dy = sy - hy;
-    if(Math.abs(dx)>Math.abs(dy)) setDir(dx>0?1:-1,0); else setDir(0, dy>0?1:-1);
-  }
-  can.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; turnByPoint(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
-  can.addEventListener('mousedown', e=>turnByPoint(e.clientX,e.clientY));
-  window.addEventListener('keydown', e=>{
-    if(overlay.hidden || stage.hidden) return;
-    const k=e.key.toLowerCase();
-    if(k==='arrowup'||k==='w') setDir(0,-1);
-    else if(k==='arrowdown'||k==='s') setDir(0,1);
-    else if(k==='arrowleft'||k==='a') setDir(-1,0);
-    else if(k==='arrowright'||k==='d') setDir(1,0);
-    else if(k===' '){ paused=!paused; if(!paused) step(); }
-  });
-  openBtn.addEventListener('click', openOverlay);
-  playHotspot.addEventListener('click', startGame);
-  closeBtn1.addEventListener('click', closeOverlay);
-  closeBtn2.addEventListener('click', closeOverlay);
-})();
+
+  ctx.clearRect(0,0,can.width,can.height);
+  ctx.strokeStyle='rgba(255,255,255,.05)';
+  for(let i=0;i<=N;i++){ ctx.beginPath(); ctx.moveTo(i*GRID,0); ctx.lineTo(i*GRID,N*GRID); ctx.stroke(); }
+  for(let i=0;i<=N;i++){ ctx.beginPath(); ctx.moveTo(0,i*GRID); ctx.lineTo(N*GRID,i*GRID); ctx.stroke(); }
+  drawCell(food.x, food.y, '#22c55e');
+  snake.forEach((s,i)=> drawCell(s.x,s.y, i===0?'#60a5fa':'#94a3b8'));
+
+  clearTimeout(loop);
+  loop=setTimeout(step, speed);
+}
+function start(){ resetGame(); step(); }
+
+function setDir(nx,ny){
+  if (snake.length>1 && (snake[0].x+nx===snake[1].x) && (snake[0].y+ny===snake[1].y)) return;
+  dir={x:nx,y:ny};
+}
+
+/* клавіатура */
+window.addEventListener('keydown', e=>{
+  if (!snakeDialog.open) return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowup'||k==='w') setDir(0,-1);
+  else if(k==='arrowdown'||k==='s') setDir(0,1);
+  else if(k==='arrowleft'||k==='a') setDir(-1,0);
+  else if(k==='arrowright'||k==='d') setDir(1,0);
+  else if(k===' '){ paused=!paused; if(!paused) step(); }
+});
+
+/* мишка/тап */
+function turnByPoint(px, py){
+  const rect = can.getBoundingClientRect();
+  const x = px - rect.left, y = py - rect.top;
+  const headX = (snake[0].x + 0.5) * GRID * (rect.width / (N*GRID));
+  const headY = (snake[0].y + 0.5) * GRID * (rect.height / (N*GRID));
+  const dx = x - headX, dy = y - headY;
+  if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 1 : -1, 0);
+  else                             setDir(0, dy > 0 ? 1 : -1);
+}
+can.addEventListener('touchmove', e => e.preventDefault(), { passive:false });
+can.addEventListener('touchstart', e => {
+  const t = e.changedTouches[0];
+  turnByPoint(t.clientX, t.clientY);
+  e.preventDefault();
+}, { passive:false });
+can.addEventListener('mousedown', e => { turnByPoint(e.clientX, e.clientY); });
+
+/* відкрити/закрити */
+function openSnake(){
+  document.body.style.overflow='hidden';
+  snakeDialog.showModal();
+  start();
+}
+function closeSnake(){
+  snakeDialog.close();
+  document.body.style.overflow='';
+  paused=true;
+  clearTimeout(loop);
+}
+
+openSnakeBtn.addEventListener('click', openSnake);
+btnCloseSnake.addEventListener('click', closeSnake);
+btnPause.addEventListener('click', ()=>{ paused=!paused; if(!paused) step(); });
+btnRestart.addEventListener('click', ()=> start() );
 </script>
 
 </body>
